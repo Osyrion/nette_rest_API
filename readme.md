@@ -1,43 +1,138 @@
-User Authentication (Nette example)
+REST API (Nette framework)
 ===================================
 
-Example of user management.
+This is example of REST API implemented in Nette framework.
 
-- User login, registration and logout (`SignPresenter`)
-- Command line registration (`bin/create-user.php`)
-- Authentication using database table (`UserFacade`)
-- Password hashing
-- Presenter requiring authentication (`DashboardPresenter`) using the `RequireLoggedUser` trait
-- Rendering forms using Bootstrap CSS framework
-- Automatic CSRF protection using a token when the user is logged in (`FormFactory`)
-- Separation of form factories into independent classes (`SignInFormFactory`, `SignUpFormFactory`)
-- Return to previous page after login (`SignPresenter::$backlink`)
+API has been built to manipulate contacts.
 
+Intro
+------------
+There are 2 basic tables: 
+- persons
+- phones
 
-Installation
+Each person could have 0 to N phone numbers.
+Phone number without person is not allowed.
+Each "contact" should have person and at least 1 phone number.
+
+Methods
 ------------
 
-```shell
-git clone https://github.com/nette-examples/user-authentication
-cd user-authentication
-composer update
+Implemented methods:
+- GET
+- POST
+- DELETE
+
+Other methods are not implemented.
+
+Endpoints
+------------
+
+GET
+
+```
+/api/
 ```
 
-Set the database access data in the `config/local.neon` file:
+send back all contacts in JSON. Persons without phone number are not included in that list.
 
-```neon
-database:
-	dsn: 'mysql:host=127.0.0.1;dbname=***'
-	user: ***
-	password: ***
+
+```
+/api/name/<personName>
+
+example:
+/api/name/Alfons
+```
+send back Persons with that name in JSON.
+
+
+```
+/api/surname/<personSurname>
+
+example:
+/api/surname/Smith
+```
+send back Persons with that surname in JSON.
+
+
+```
+/api/email/<personEmail>
+
+example:
+/api/email/smith@email.com
+```
+send back Person with that email in JSON. Emails are unique.
+
+
+```
+/api/id/<personId>
+
+example:
+/api/id/34
+```
+send back Person with that id in JSON. Id is primary key.
+
+
+```
+/api/phone/<personPhone>
+
+example:
+/api/phone/755899699
+```
+send back Person with that phone number in JSON.
+<br><hr><br>
+
+POST
+
+```
+/api/insertdata
 ```
 
-And create a users table in the database by importing the `users.mysql.sql` file
-
-The simplest way to get started is to start the built-in PHP server in the root directory of your project:
-
-```shell
-php -S localhost:8000 -t www
+Requested body:
+```json
+[{
+    "name" : "Dan",
+    "surname" : "Newman",
+    "email" : "newman@email.com",
+    "phone" : "789554222" 
+},
+{
+    "name" : "Judith",
+    "surname" : "Tate",
+    "email" : "tate@email.com",
+    "phone" : "777888999" 
+}]
 ```
 
-Then visit `http://localhost:8000` in your browser to see the welcome page.
+OR
+
+```json
+{
+    "name" : "Adam",
+    "surname" : "Fitch",
+    "email" : "fitch@email.com",
+    "phone" : "123456789" 
+}
+```
+to upload data to server. Persons surname and email are mandatory.
+<br><hr><br>
+
+DELETE
+
+```
+/api/deletedata/person/<id>
+
+example:
+/api/deletedata/person/34
+```
+This removes Person by id and also all his phone numbers. If Person with that id not exists, nothing happens.
+
+```
+/api/deletedata/phone/
+
+example:
+/api/deletedata/phone/735951456
+```
+This removes only current number. If not exists, nothing happens.
+
+
