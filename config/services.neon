@@ -1,0 +1,6 @@
+services:
+	- App\Router\RouterFactory::createRouter
+	- App\Model\Contacts
+	- App\Model\Phones
+	- App\Model\Persons
+	- App\Model\Repository\ContactsRepository
